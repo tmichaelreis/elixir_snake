@@ -1,1 +1,1 @@
-Recreated from git remote add origin https://github.com/tmichaelreis/elixir_snake.git with some improvements
+Recreated from https://blog.usejournal.com/elixir-scenic-snake-game-b8616b1d7ee0with some improvements
