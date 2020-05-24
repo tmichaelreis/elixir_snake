@@ -7,7 +7,7 @@ defmodule ElixirSnake.Scene.GameOver do
   @text_opts [id: :gameover, fill: :white, text_align: :center]
 
   @graph Graph.build(font: :roboto, font_size: 36, clear_color: :black)
-    |> text("Game Over!", @text_opts)
+         |> text("Game Over!", @text_opts)
 
   @game_scene ElixirSnake.Scene.Game
 
@@ -18,9 +18,9 @@ defmodule ElixirSnake.Scene.GameOver do
 
     position = {vp_width / 2, vp_height / 2}
 
-    graph = @graph
-            |> Graph.modify(:gameover, &update_opts(&1, translate: position))
-            |> push_graph()
+    graph =
+      @graph
+      |> Graph.modify(:gameover, &update_opts(&1, translate: position))
 
     state = %{
       graph: graph,
@@ -31,18 +31,24 @@ defmodule ElixirSnake.Scene.GameOver do
 
     Process.send_after(self(), :end_cooldown, 2000)
 
-    {:ok, state}
+    {:ok, state, push: graph}
   end
 
   def handle_info(:end_cooldown, state) do
-    graph = state.graph
-            |> Graph.modify(:gameover, &text(&1, "Game Over!\n"
-                                             <> "You scored #{state.score}.\n"
-                                             <> "Press any key to try again.",
-                                             @text_opts))
-            |> push_graph()
+    graph =
+      state.graph
+      |> Graph.modify(
+        :gameover,
+        &text(
+          &1,
+          "Game Over!\n" <>
+            "You scored #{state.score}.\n" <>
+            "Press any key to try again.",
+          @text_opts
+        )
+      )
 
-    {:noreply, %{state | on_cooldown: false, graph: graph}}
+    {:noreply, %{state | on_cooldown: false, graph: graph}, push: graph}
   end
 
   def handle_input({:key, _}, _context, %{on_cooldown: false} = state) do
@@ -56,4 +62,3 @@ defmodule ElixirSnake.Scene.GameOver do
     ViewPort.set_root(vp, {@game_scene, nil})
   end
 end
-
